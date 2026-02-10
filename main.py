@@ -4,6 +4,9 @@ from tkinter import messagebox
 # -------------------------------
 # FRACTIONAL KNAPSACK (Greedy Ratio)
 # -------------------------------
+# -------------------------------
+# FRACTIONAL KNAPSACK (Greedy Ratio)
+# -------------------------------
 def fractional_knapsack(items, capacity):
     items.sort(key=lambda x: x[0] / x[1], reverse=True)
 
@@ -19,7 +22,7 @@ def fractional_knapsack(items, capacity):
             if capacity > 0:
                 fraction = capacity / weight
                 total_profit += profit * fraction
-                selected.append((profit, weight, f"{fraction:.2f} Fraction"))
+                selected.append((profit, weight, fraction)) # Return raw fraction
             break
 
     return total_profit, selected
@@ -133,7 +136,12 @@ def run_knapsack():
         output += "Selected Items (Profit, Weight):\n"
 
         for item in selected:
-            output += str(item) + "\n"
+            # Handle formatting if item has a float fraction
+            if len(item) > 2 and isinstance(item[2], float):
+                 display_item = (item[0], item[1], f"{item[2]:.2f} Fraction")
+                 output += str(display_item) + "\n"
+            else:
+                 output += str(item) + "\n"
 
         result_label.config(text=output)
 

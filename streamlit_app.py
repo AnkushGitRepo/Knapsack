@@ -24,7 +24,7 @@ def fractional_knapsack(items, capacity):
             if capacity > 0:
                 fraction = capacity / weight
                 total_profit += profit * fraction
-                selected.append((profit, weight, f"{fraction:.2f} Fraction"))
+                selected.append((profit, weight, fraction)) # Store raw fraction
             break
 
     return total_profit, selected
@@ -138,6 +138,7 @@ selected_algo = st.sidebar.selectbox("Select Algorithm", algo_options)
 st.subheader("📦 Manage Items")
 
 # Default items using list of dicts instead of DataFrame
+# Default items using list of dicts instead of DataFrame
 if 'items_data' not in st.session_state:
     st.session_state.items_data = [
         {"Profit": 60, "Weight": 10},
@@ -146,8 +147,8 @@ if 'items_data' not in st.session_state:
     ]
 
 # Data Editor supports list of dicts natively
-edited_data = st.data_editor(st.session_state.items_data, num_rows="dynamic", use_container_width=True)
-st.session_state.items_data = edited_data
+# Use 'key' to automatically bind changes and maintain state
+edited_data = st.data_editor(st.session_state.items_data, num_rows="dynamic", use_container_width=True, key="editor")
 
 # Prepare items for algorithm
 items = []
@@ -211,19 +212,30 @@ if st.sidebar.button("🚀 Run Algorithm"):
             
             # For fractional, if status is distinct
             fraction = 1.0
-            if isinstance(status, str) and "Fraction" in status:
+            display_status = status
+
+            if isinstance(status, float):
+                fraction = status
+                display_status = f"{fraction:.2f} Fraction"
+            elif isinstance(status, str) and "Fraction" in status:
                 try:
                     fraction = float(status.split()[0])
                 except:
                     fraction = 1.0
             
-            weight_contributed = w * fraction if "Fraction" in str(status) else w
+            # Calculate weight contributed based on FRACTION (if exists) or full weight
+            # If status suggests a fraction (either float or string 'X Fraction'), use it
+            if isinstance(status, float) or (isinstance(status, str) and "Fraction" in status):
+                 weight_contributed = w * fraction
+            else:
+                 weight_contributed = w
+                 
             total_weight_used += weight_contributed
             
             selected_data.append({
                 "Profit": p,
                 "Weight": w,
-                "Status": status
+                "Status": display_status
             })
             
         st.subheader("Selected Items")
@@ -298,7 +310,7 @@ def fractional_knapsack(items, capacity):
             if capacity > 0:
                 fraction = capacity / weight
                 total_profit += profit * fraction
-                selected.append((profit, weight, f"{fraction:.2f} Fraction"))
+                selected.append((profit, weight, fraction)) # Return raw fraction
             break
 
     return total_profit, selected

@@ -40,7 +40,7 @@ The application includes four distinct approaches to solving variations of the K
 ### Installation
 1.  **Clone the repository** (or download source files):
     ```bash
-    git clone <repository-url>
+    git clone git@github.com:AnkushGitRepo/Knapsack.git
     cd Knapsack
     ```
 
